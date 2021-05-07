@@ -24,12 +24,16 @@ import com.example.shopping.Model.CartItem;
 import com.example.shopping.Model.Product;
 import com.example.shopping.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLSyntaxErrorException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import static android.content.Context.MODE_PRIVATE;
+import static java.security.AccessController.getContext;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartAdapterVH> {
     private Context context;
@@ -58,7 +62,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartAdapterVH>
         String formattedCurrency = moneyFormat.format(item.getMoney());
         holder.productItemPrice.setText(formattedCurrency);
 
-        holder.productItemQuantity.setText(String.valueOf(item.getQuantity()));
+        String padFormat = String.format("%02d", item.getQuantity());
+        holder.productItemQuantity.setText(String.valueOf(padFormat));
 
         Glide.with(holder.itemView).load("file:///android_asset/Image/" + item.getImage()).into(holder.productItemImage);
     }

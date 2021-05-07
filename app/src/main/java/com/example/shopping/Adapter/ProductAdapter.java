@@ -195,7 +195,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                     Product product = products.get(getLayoutPosition());
 
                     args.putSerializable("product", product);
-                    DetailFragment detailFragment = new DetailFragment();
+                    DetailFragment detailFragment = new DetailFragment(navView);
                     detailFragment.setArguments(args);
 
                     transaction.replace(R.id.nav_host_fragment, detailFragment);

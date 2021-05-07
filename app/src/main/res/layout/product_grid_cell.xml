@@ -30,11 +30,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="24dp"
-        android:scaleType="centerCrop"
+        android:scaleType="fitXY"
+        android:transitionName="detail_img_tran"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:transitionName="detail_img_tran"
         app:srcCompat="@drawable/hoodie" />
 
     <TextView

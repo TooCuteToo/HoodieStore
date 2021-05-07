@@ -1,4 +1,5 @@
 package com.example.shopping.Interface;
+import com.example.shopping.Model.Category;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.Model.Order;
 import com.example.shopping.Model.Product;
@@ -19,6 +20,12 @@ public interface API {
 
     @GET("products/{id}")
     Call<List<Product>> getProduct(@Path("id") String name);
+
+    @GET("categories")
+    Call<List<Category>> getCategories();
+
+    @GET("categories/{id}")
+    Call<List<Product>> getProductsByCategory(@Path("id") String typeId);
 
     @POST("orders/{customerId}")
     Call<List<Order>> getOrders(@Path("customerId") int customerId);

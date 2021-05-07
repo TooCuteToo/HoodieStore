@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shopping.Fragment.CartFragment;
+import com.example.shopping.Fragment.CategoryFragment;
+import com.example.shopping.Fragment.CategoryProductsFragment;
 import com.example.shopping.Fragment.FavoriteFragment;
 import com.example.shopping.Fragment.InfoFragment;
 import com.example.shopping.Fragment.ProductsFragment;
@@ -150,6 +152,13 @@ public class HomeActivity extends AppCompatActivity {
 
                 case R.id.search:
                     fragment = new SearchFragment(navView);
+                    loadFragment(fragment);
+                    return true;
+
+                case R.id.category:
+                    fragment = new CategoryFragment();
+                    ((CategoryFragment) fragment).setNavView(navView);
+                    fragment.setArguments(bundle);
                     loadFragment(fragment);
                     return true;
 

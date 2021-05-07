@@ -23,6 +23,7 @@ import com.example.shopping.Model.Cart;
 import com.example.shopping.Model.CartItem;
 import com.example.shopping.Model.Product;
 import com.example.shopping.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.Gson;
@@ -35,9 +36,11 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public class DetailFragment extends Fragment {
     private ViewPager2 viewPager2;
+    private BottomNavigationView navView;
 
-    public DetailFragment() {
+    public DetailFragment(BottomNavigationView navView) {
         // Required empty public constructor
+        this.navView = navView;
     }
 
     @Override
@@ -113,6 +116,13 @@ public class DetailFragment extends Fragment {
 
                 prefsEditors.putString("Cart", json);
                 prefsEditors.apply();
+
+                int count = Cart.getInstance().calculateQuantity();
+
+                if (count != 0) {
+                    navView.getOrCreateBadge(R.id.cart).setNumber(count);
+                    navView.getOrCreateBadge(R.id.cart).setVisible(true);
+                }
             }
         });
     }

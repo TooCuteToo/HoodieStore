@@ -1,6 +1,8 @@
 package com.example.shopping.Utils;
 
+import com.example.shopping.Adapter.CategoryAdapter;
 import com.example.shopping.Interface.API;
+import com.example.shopping.Model.Category;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.Model.Order;
 import com.example.shopping.Model.Product;
@@ -29,6 +31,52 @@ public class APIHelper {
         API api = retrofit.create(API.class);
 
         Call<List<Product>> call = api.getProducts();
+
+        call.enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful()) {
+                    List<Product> products = response.body();
+                    productAdapter.setProducts(products);
+                    productAdapter.notifyDataSetChanged();
+                } else return;
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                System.out.println(t);
+            }
+        });
+    }
+
+    public static void fetchCategories(CategoryAdapter categoryAdapter) {
+        Retrofit retrofit = buildRetrofit();
+        API api = retrofit.create(API.class);
+
+        Call<List<Category>> call = api.getCategories();
+
+        call.enqueue(new Callback<List<Category>>() {
+            @Override
+            public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                if (response.isSuccessful()) {
+                    List<Category> categories = response.body();
+                    categoryAdapter.setCategories(categories);
+                    categoryAdapter.notifyDataSetChanged();
+                } else return;
+            }
+
+            @Override
+            public void onFailure(Call<List<Category>> call, Throwable t) {
+                System.out.println(t);
+            }
+        });
+    }
+
+    public static void fetchProductsByCategory(String typeId, ProductAdapter productAdapter) {
+        Retrofit retrofit = buildRetrofit();
+        API api = retrofit.create(API.class);
+
+        Call<List<Product>> call = api.getProductsByCategory(typeId);
 
         call.enqueue(new Callback<List<Product>>() {
             @Override

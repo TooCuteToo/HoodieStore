@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <ImageView
+        android:id="@+id/category_img"
+        android:layout_width="170dp"
+        android:layout_height="224dp"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="parent"
+        android:transitionName="category_img_tran"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/hoodie" />
+
+    <TextView
+        android:id="@+id/category_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#000"
+        android:fontFamily="@font/playfair_display_bold"
+        android:transitionName="category_title_tran"
+        android:paddingStart="8dp"
+        android:paddingTop="3dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="3dp"
+        android:text="HOODIE"
+        android:textColor="#FBFBFB"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/category_img"
+        app:layout_constraintEnd_toEndOf="@+id/category_img" />
+</androidx.constraintlayout.widget.ConstraintLayout>
