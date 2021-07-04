@@ -1,6 +1,8 @@
 package com.example.shopping.Fragment;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -77,7 +79,8 @@ public class CartFragment extends Fragment {
         cartRecycler.setLayoutManager(grid);
         cartAdapter = new CartAdapter(getContext());
 
-        cartQuantity.setText(String.valueOf(Cart.getInstance().calculateQuantity()));
+        String padFormat = String.format("%02d", Cart.getInstance().calculateQuantity());
+        cartQuantity.setText(padFormat);
 
         DecimalFormat moneyFormat = new DecimalFormat("$0.00");
         String formattedCurrency = moneyFormat.format(Cart.getInstance().calculateTotal());
@@ -86,7 +89,9 @@ public class CartFragment extends Fragment {
         cartAdapter.setOnDataChangeListener(new CartAdapter.OnDataChangeListener() {
             @Override
             public void onDataChanged(int size) {
-                cartQuantity.setText(String.valueOf(Cart.getInstance().calculateQuantity()));
+                String padFormat = String.format("%02d", Cart.getInstance().calculateQuantity());
+                cartQuantity.setText(padFormat);
+
                 DecimalFormat moneyFormat = new DecimalFormat("$0.00");
                 String formattedCurrency = moneyFormat.format(Cart.getInstance().calculateTotal());
                 cartTotal.setText(formattedCurrency);
@@ -108,28 +113,46 @@ public class CartFragment extends Fragment {
         checkoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = getContext().getSharedPreferences("CartPrefs", Context.MODE_PRIVATE).edit();
-                editor.clear().apply();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Are you sure ?")
+                        .setTitle("Information")
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                ArrayList<OrderDetail> orderDetails = new ArrayList<>();
-                for (CartItem item : Cart.getInstance().getItems()) {
-                    OrderDetail detail = new OrderDetail(item.getId(), item.getTypeId(), item.getQuantity(), item.getMoney());
-                    orderDetails.add(detail);
-                }
+                            }
+                        })
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                SharedPreferences.Editor editor = getContext().getSharedPreferences("CartPrefs", Context.MODE_PRIVATE).edit();
+                                editor.clear().apply();
 
-                Order order = new Order(customer.getCustomerId(), Cart.getInstance().calculateTotal(), orderDetails);
-                APIHelper.postOrder(order);
+                                ArrayList<OrderDetail> orderDetails = new ArrayList<>();
+                                for (CartItem item : Cart.getInstance().getItems()) {
+                                    OrderDetail detail = new OrderDetail(item.getId(), item.getTypeId(), item.getQuantity(), item.getMoney());
+                                    orderDetails.add(detail);
+                                }
 
-                Cart.getInstance().getItems().clear();
-                cartAdapter.notifyDataSetChanged();
-                cartQuantity.setText(String.valueOf(Cart.getInstance().calculateQuantity()));
+                                Order order = new Order(customer.getCustomerId(), Cart.getInstance().calculateTotal(), orderDetails);
+                                APIHelper.postOrder(order);
 
-                DecimalFormat moneyFormat = new DecimalFormat("$0.00");
-                String formattedCurrency = moneyFormat.format(Cart.getInstance().calculateTotal());
-                cartTotal.setText(formattedCurrency);
+                                Cart.getInstance().getItems().clear();
+                                cartAdapter.notifyDataSetChanged();
 
-                navView.getOrCreateBadge(R.id.cart).clearNumber();
-                navView.getOrCreateBadge(R.id.cart).setVisible(false);
+                                String padFormat = String.format("%02d", Cart.getInstance().calculateQuantity());
+                                cartQuantity.setText(padFormat);
+
+                                DecimalFormat moneyFormat = new DecimalFormat("$0.00");
+                                String formattedCurrency = moneyFormat.format(Cart.getInstance().calculateTotal());
+                                cartTotal.setText(formattedCurrency);
+
+                                navView.getOrCreateBadge(R.id.cart).clearNumber();
+                                navView.getOrCreateBadge(R.id.cart).setVisible(false);
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 

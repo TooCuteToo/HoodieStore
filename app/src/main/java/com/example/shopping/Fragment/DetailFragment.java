@@ -65,7 +65,13 @@ public class DetailFragment extends Fragment {
         TextView productID = view.findViewById(R.id.productID);
         TextView productPrice = view.findViewById(R.id.detailPrice);
         ImageView productImg = view.findViewById(R.id.productImg);
+
+        CartItem item = new CartItem();
+        item.setId(product.getId());
+
         Button buyBtn = view.findViewById(R.id.buyBtn);
+
+        if (Cart.getInstance().isInCart(item) >= 0) buyBtn.setText("IN CART");
 
         productName.setAnimation(topAnim);
         productImg.setAnimation(bottomAnim);
@@ -123,6 +129,8 @@ public class DetailFragment extends Fragment {
                     navView.getOrCreateBadge(R.id.cart).setNumber(count);
                     navView.getOrCreateBadge(R.id.cart).setVisible(true);
                 }
+
+                buyBtn.setText("IN CART");
             }
         });
     }

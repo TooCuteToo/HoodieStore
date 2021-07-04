@@ -2,11 +2,13 @@ package com.example.shopping.Interface;
 import com.example.shopping.Model.Category;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.Model.Order;
+import com.example.shopping.Model.OrderDetail;
 import com.example.shopping.Model.Product;
 
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -27,8 +29,11 @@ public interface API {
     @GET("categories/{id}")
     Call<List<Product>> getProductsByCategory(@Path("id") String typeId);
 
-    @POST("orders/{customerId}")
+    @GET("orders/{customerId}")
     Call<List<Order>> getOrders(@Path("customerId") int customerId);
+
+    @GET("ordersdetail/{orderId}")
+    Call<List<OrderDetail>> getOrdersDetail(@Path("orderId") int orderId);
 
     @POST("favorites")
     @FormUrlEncoded
@@ -47,6 +52,10 @@ public interface API {
     @POST("favorite")
     @FormUrlEncoded
     Call<List<Product>> getFavorite(@Field("customerId") int customerId);
+
+    @POST("delete_favorite")
+    @FormUrlEncoded
+    Call<Void> deleteFavorite(@Field("customerId") int customerId, @Field("Id") int Id);
 
     @PUT("customer/{id}")
     Call<Void> editCustomer(@Path("id") int id, @Body Customer customer);

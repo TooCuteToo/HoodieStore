@@ -106,6 +106,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/order_card"
                 android:layout_width="match_parent"
                 android:layout_height="125dp"
                 android:layout_margin="10dp"
@@ -119,10 +120,10 @@
                     android:padding="5dp">
 
                     <ImageView
-                        android:layout_marginTop="8dp"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_centerHorizontal="true"
+                        android:layout_marginTop="8dp"
                         app:srcCompat="@drawable/order" />
 
                     <TextView

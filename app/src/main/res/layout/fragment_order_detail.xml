@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment.CartFragment">
+    tools:context=".Fragment.OrderDetailFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/cart_recycler"
+        android:id="@+id/product_order_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
@@ -19,20 +19,17 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout2"
         android:layout_width="0dp"
-        android:layout_height="155dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginBottom="1dp"
+        android:layout_height="125dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-
         <TextView
-            android:id="@+id/cart_quantity_label"
+            android:id="@+id/product_order_quantity_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:fontFamily="@font/work_sans_medium"
             android:text="Quantity:"
             android:textColor="#000"
@@ -42,7 +39,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/cart_total_label"
+            android:id="@+id/product_order_total_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -51,28 +48,14 @@
             android:textColor="#000"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/cart_quantity_label"
-            app:layout_constraintTop_toBottomOf="@+id/cart_quantity_label" />
-
-        <Button
-            android:id="@+id/checkout_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#000"
-            android:fontFamily="@font/bungee"
-            android:includeFontPadding="false"
-            android:padding="10dp"
-            android:text="CHECKOUT"
-            android:textColor="#fff"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="@+id/product_order_quantity_label"
+            app:layout_constraintTop_toBottomOf="@+id/product_order_quantity_label" />
 
         <TextView
-            android:id="@+id/cart_quantity_txt"
+            android:id="@+id/product_order_quantity_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/work_sans_medium"
             android:text="10"
@@ -83,7 +66,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/cart_total_txt"
+            android:id="@+id/product_order_total_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -92,7 +75,7 @@
             android:textAlignment="center"
             android:textColor="#000"
             android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="@+id/cart_quantity_txt"
-            app:layout_constraintTop_toBottomOf="@+id/cart_quantity_txt" />
+            app:layout_constraintEnd_toEndOf="@+id/product_order_quantity_txt"
+            app:layout_constraintTop_toBottomOf="@+id/product_order_quantity_txt" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

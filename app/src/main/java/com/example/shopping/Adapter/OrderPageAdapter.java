@@ -34,6 +34,7 @@ public class OrderPageAdapter extends FragmentStateAdapter {
                 return descFragment;
             case 1:
                 return new ShippingFragment();
+
             default:
                 return new PaymentFragment();
         }

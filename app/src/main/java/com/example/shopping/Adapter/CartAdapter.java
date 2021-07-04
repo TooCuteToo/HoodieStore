@@ -8,6 +8,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.textservice.TextInfo;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -59,7 +60,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartAdapterVH>
         holder.productItemName.setText(item.getName());
 
         DecimalFormat moneyFormat = new DecimalFormat("$0.00");
-        String formattedCurrency = moneyFormat.format(item.getMoney());
+        String formattedCurrency = moneyFormat.format(item.calculateTotalMoney());
         holder.productItemPrice.setText(formattedCurrency);
 
         String padFormat = String.format("%02d", item.getQuantity());
@@ -88,11 +89,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartAdapterVH>
         TextView productItemName;
         TextView productItemPrice;
         TextView productItemQuantity;
+        TextView upIcon;
+        TextView downIcon;
 
         ImageView productItemImage;
         ImageView deleteIcon;
-        ImageView upIcon;
-        ImageView downIcon;
 
         public CartAdapterVH(@NonNull View itemView) {
             super(itemView);

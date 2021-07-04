@@ -3,6 +3,12 @@ package com.example.shopping.Model;
 import com.google.gson.annotations.SerializedName;
 
 public class OrderDetail {
+    @SerializedName("name")
+    private String name;
+
+    @SerializedName("img")
+    private String image;
+
     @SerializedName("Id")
     private int id;
 
@@ -20,6 +26,31 @@ public class OrderDetail {
         this.typeId = typeId;
         this.quantity = quantity;
         this.money = money;
+    }
+
+    public OrderDetail(String name, String image, int id, String typeId, int quantity, float money) {
+        this.name = name;
+        this.image = image;
+        this.id = id;
+        this.typeId = typeId;
+        this.quantity = quantity;
+        this.money = money;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public int getId() {
@@ -52,5 +83,9 @@ public class OrderDetail {
 
     public void setMoney(float money) {
         this.money = money;
+    }
+
+    public float calculateTotalMoney() {
+        return this.money * this.quantity;
     }
 }

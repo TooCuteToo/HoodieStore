@@ -20,6 +20,7 @@ import com.example.shopping.Interface.API;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.R;
 import com.example.shopping.Utils.APIHelper;
+import com.example.shopping.Utils.Dialog;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
@@ -38,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView logoImg;
     private TextView logoName;
     private TextView sloganName;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +152,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     List<Customer> customers = response.body();
                     if (customers.size() <= 0) {
+                        Dialog.showAlert(LoginActivity.this, "Check your login information again!!!");
                         return;
                     }
 
@@ -182,7 +183,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Customer>> call, Throwable t) {
-                System.out.println(t);
+                Dialog.showAlert(LoginActivity.this, t.toString());
             }
         });
     }

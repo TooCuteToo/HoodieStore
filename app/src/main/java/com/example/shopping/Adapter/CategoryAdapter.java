@@ -23,6 +23,8 @@ import com.example.shopping.Model.Category;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.Model.Product;
 import com.example.shopping.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -31,6 +33,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     private Context context;
     private List<Category> categories;
     private Customer customer;
+    private BottomNavigationView navView;
 
     public CategoryAdapter(Context context, List<Category> categories) {
         this.context = context;
@@ -59,6 +62,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public BottomNavigationView getNavView() {
+        return navView;
+    }
+
+    public void setNavView(BottomNavigationView navView) {
+        this.navView = navView;
     }
 
     @NonNull
@@ -121,6 +132,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
                     CategoryProductsFragment categoryProductsFragment = new CategoryProductsFragment();
                     categoryProductsFragment.setArguments(args);
+                    categoryProductsFragment.setNavView(navView);
 
                     transaction.replace(R.id.nav_host_fragment, categoryProductsFragment);
                     transaction.addSharedElement(categoryTitle, "category_title_tran");

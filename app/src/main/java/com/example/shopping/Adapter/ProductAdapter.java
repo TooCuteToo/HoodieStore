@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.shopping.Fragment.DetailFragment;
+import com.example.shopping.Interface.API;
 import com.example.shopping.Model.Cart;
 import com.example.shopping.Model.CartItem;
 import com.example.shopping.Model.Customer;
@@ -32,6 +34,11 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
 import static android.content.Context.MODE_PRIVATE;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductAdapterVH> {
@@ -39,6 +46,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
     private List<Product> products;
     private Customer customer;
     private BottomNavigationView navView;
+    private int flag; // 0 - ProductFragement || 1 - FavoriteFragment
 
     public ProductAdapter(Context context, List<Product> products) {
         this.context = context;
@@ -59,6 +67,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public int getFlag() {
+        return flag;
+    }
+
+    public void setFlag(int flag) {
+        this.flag = flag;
     }
 
     public Customer getCustomer() {
@@ -91,6 +107,38 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
 
         holder.product_title.setText(product.getName());
         Glide.with(holder.itemView).load("file:///android_asset/Image/" + product.getImg()).into(holder.product_img);
+
+        CartItem item = new CartItem();
+        item.setId(product.getId());
+
+        if (Cart.getInstance().isInCart(item) >= 0) {
+            holder.shopNow.setText("IN CART");
+        }
+
+        Retrofit retrofit = APIHelper.buildRetrofit();
+        API api = retrofit.create(API.class);
+        Call<List<Product>> call = api.getFavorite(customer.getCustomerId());
+
+        call.enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful()) {
+                    List<Product> products = response.body();
+
+                    if (products.size() > 0) {
+                        for (Product elem : products) {
+                            if (elem.getId() == product.getId()) holder.product_heart.setChecked(true);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                System.out.println(t);
+            }
+        });
+
 //        holder.product_img.setImageURI(Uri.parse("file:///android_asset/Image/" + product.getImg()));
 
 //        holder.product_img.setOnClickListener(new View.OnClickListener() {
@@ -132,13 +180,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
         TextView product_title;
         TextView shopNow;
         ImageView product_img;
-        ImageView product_like;
+        ToggleButton product_heart;
 
         public ProductAdapterVH(@NonNull View itemView) {
             super(itemView);
             this.product_title = itemView.findViewById(R.id.product_title);
             this.product_img = itemView.findViewById(R.id.product_img);
-            this.product_like = itemView.findViewById(R.id.product_like);
+            this.product_heart = itemView.findViewById(R.id.product_heart);
             this.shopNow = itemView.findViewById(R.id.shop_now);
             this.itemView = itemView;
 
@@ -177,6 +225,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                         navView.getOrCreateBadge(R.id.cart).setNumber(count);
                         navView.getOrCreateBadge(R.id.cart).setVisible(true);
                     }
+
+                    shopNow.setText("IN CART");
                 }
             });
 
@@ -207,13 +257,60 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                 }
             });
 
-            product_like.setOnClickListener(new View.OnClickListener() {
+            product_heart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Product product = products.get(getLayoutPosition());
-                    navView.getOrCreateBadge(R.id.heart).setNumber(++Counter.favoriteCounter);
-                    navView.getOrCreateBadge(R.id.heart).setVisible(true);
-                    APIHelper.postFavorite(customer.getCustomerId(), product.getId());
+                    if (product_heart.isChecked()) {
+                        Product product = products.get(getLayoutPosition());
+                        navView.getOrCreateBadge(R.id.heart).setNumber(++Counter.favoriteCounter);
+                        navView.getOrCreateBadge(R.id.heart).setVisible(true);
+
+                        Retrofit retrofit = APIHelper.buildRetrofit();
+                        API api = retrofit.create(API.class);
+                        Call<Void> call = api.postFavorite(customer.getCustomerId(), product.getId());
+
+                        call.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                System.out.println(response.code());
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                System.out.println(t);
+                            }
+                        });
+                    } else {
+                        Product product = products.get(getLayoutPosition());
+                        Retrofit retrofit = APIHelper.buildRetrofit();
+                        API api = retrofit.create(API.class);
+                        Call<Void> call = api.deleteFavorite(customer.getCustomerId(), product.getId());
+
+                        call.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                System.out.println(response.code());
+
+                                if (Counter.favoriteCounter > 1) {
+                                    navView.getOrCreateBadge(R.id.heart).setNumber(--Counter.favoriteCounter);
+                                    navView.getOrCreateBadge(R.id.heart).setVisible(true);
+                                } else {
+                                    navView.getOrCreateBadge(R.id.heart).setVisible(false);
+                                }
+
+
+                                if (flag == 1) {
+                                    products.remove(product);
+                                    notifyDataSetChanged();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                System.out.println(t);
+                            }
+                        });
+                    }
                 }
             });
         }

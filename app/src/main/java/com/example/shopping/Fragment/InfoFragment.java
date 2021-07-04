@@ -1,13 +1,19 @@
 package com.example.shopping.Fragment;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +24,10 @@ import com.example.shopping.Interface.API;
 import com.example.shopping.Model.Cart;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.Model.Order;
+import com.example.shopping.Model.Product;
 import com.example.shopping.R;
 import com.example.shopping.Utils.APIHelper;
+import com.example.shopping.Utils.Dialog;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DecimalFormat;
@@ -53,7 +61,6 @@ public class InfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        System.out.println(Cart.getInstance().getItems().size());
         return inflater.inflate(R.layout.fragment_info, container, false);
     }
 
@@ -72,6 +79,7 @@ public class InfoFragment extends Fragment {
         TextInputLayout infoEmailTxt = view.findViewById(R.id.info_email_txt);
         TextInputLayout infoPasswordTxt = view.findViewById(R.id.info_password_txt);
 
+        CardView orderCard = view.findViewById(R.id.order_card);
         Button saveBtn = view.findViewById(R.id.save_btn);
 
         infoName.setText(customer.getName());
@@ -88,7 +96,6 @@ public class InfoFragment extends Fragment {
                 .build();
 
         API api = retrofit.create(API.class);
-
         Call<List<Order>> call = api.getOrders(customer.getCustomerId());
 
         call.enqueue(new Callback<List<Order>>() {
@@ -108,7 +115,7 @@ public class InfoFragment extends Fragment {
                     String formattedCurrency = moneyFormat.format(sum);
                     paymentLabel.setText(formattedCurrency);
                     orderLabel.setText(String.valueOf(count));
-                } else return;
+                }
             }
 
             @Override
@@ -141,18 +148,72 @@ public class InfoFragment extends Fragment {
                 customer.setUsername(temp.getUsername());
                 customer.setPass(temp.getPass());
 
-                APIHelper.editCustomer(customer.getCustomerId(), temp);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Are you sure ?")
+                        .setTitle("Information")
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                SharedPreferences.Editor editor = getActivity().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE).edit();
-                editor.clear().apply();
+                            }
+                        })
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Retrofit retrofit = APIHelper.buildRetrofit();
+                                API api = retrofit.create(API.class);
+                                Call<Void> call = api.editCustomer(customer.getCustomerId(), customer);
 
-                infoName.setText(infoNameTxt.getEditText().getText());
-                infoUsername.setText(infoUserNameTxt.getEditText().getText());
+                                call.enqueue(new Callback<Void>() {
+                                    @Override
+                                    public void onResponse(Call<Void> call, Response<Void> response) {
+                                        int code = response.code();
+                                        if (code == 400) {
+                                            Dialog.showAlert(getContext(), "Email or username is already existed!!!");
+                                            return;
+                                        }
 
-                infoNameTxt.getEditText().clearFocus();
-                infoUserNameTxt.getEditText().clearFocus();
-                infoEmailTxt.getEditText().clearFocus();
-                infoPasswordTxt.getEditText().clearFocus();
+                                        SharedPreferences.Editor editor = getActivity().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE).edit();
+                                        editor.clear().apply();
+
+                                        infoName.setText(infoNameTxt.getEditText().getText());
+                                        infoUsername.setText(infoUserNameTxt.getEditText().getText());
+
+                                        infoNameTxt.getEditText().clearFocus();
+                                        infoUserNameTxt.getEditText().clearFocus();
+                                        infoEmailTxt.getEditText().clearFocus();
+                                        infoPasswordTxt.getEditText().clearFocus();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Void> call, Throwable t) {
+                                        System.out.println(t);
+                                    }
+                                });
+                            }
+                        });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+        orderCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentActivity fragmentActivity = (FragmentActivity) getContext();
+                FragmentTransaction transaction =
+                        fragmentActivity.getSupportFragmentManager().beginTransaction();
+
+                Bundle args = new Bundle();
+                args.putSerializable("info", customer);
+
+                OrdersFragment ordersFragment = new OrdersFragment();
+                ordersFragment.setArguments(args);
+
+                transaction.replace(R.id.nav_host_fragment, ordersFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
     }

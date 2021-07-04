@@ -87,9 +87,10 @@ public class CategoryFragment extends Fragment {
 
         categories = new ArrayList<>();
         categoryAdapter = new CategoryAdapter(getContext(), categories);
+        categoryAdapter.setNavView(navView);
         categoryAdapter.setCustomer(customer);
-
         category_recycler.setAdapter(categoryAdapter);
+
         APIHelper.fetchCategories(categoryAdapter);
     }
 }

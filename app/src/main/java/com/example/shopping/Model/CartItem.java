@@ -10,6 +10,8 @@ public class CartItem {
     private int quantity;
     private float money;
 
+    public CartItem() {}
+
     public CartItem(int id, String typeId, String image, String name, int quantity, float money) {
         this.id = id;
         this.typeId = typeId;

@@ -11,12 +11,19 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
+import com.example.shopping.Interface.API;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.R;
 import com.example.shopping.Utils.APIHelper;
+import com.example.shopping.Utils.Dialog;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.regex.Pattern;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -62,7 +69,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-
                 Customer customer = new Customer(
                         0,
                         fullNameTxtInput.getEditText().getText().toString(),
@@ -71,21 +77,35 @@ public class RegisterActivity extends AppCompatActivity {
                         passwordTxtInput.getEditText().getText().toString()
                 );
 
-                APIHelper.createCustomer(customer);
+                Retrofit retrofit = APIHelper.buildRetrofit();
+                API api = retrofit.create(API.class);
+                Call<Void> call = api.createCustomer(customer);
 
-                SharedPreferences.Editor editor = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE).edit();
-                editor.clear().apply();
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        int code = response.code();
 
-//                    Utils.context = RegisterActivity.this;
-//                    Utils.writeCustomerToInternal(customer);
+                        if (code == 400) {
+                            Dialog.showAlert(RegisterActivity.this, "Email or username is already existed!!!");
+                            return;
+                        }
 
+                        intent.putExtra("info", customer);
+                        setResult(101, intent);
 
-                intent.putExtra("info", customer);
+                        SharedPreferences.Editor editor = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE).edit();
+                        editor.clear().apply();
 
-                setResult(101, intent);
+                        startActivity(intent);
+                        finish();
+                    }
 
-                startActivity(intent);
-                finish();
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Dialog.showAlert(RegisterActivity.this, t.toString());
+                    }
+                });
             }
         });
 

@@ -10,7 +10,7 @@
     android:textAlignment="center">
 
     <ImageView
-        android:id="@+id/product_item_image"
+        android:id="@+id/product_order_item_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:padding="5dp"
@@ -21,7 +21,7 @@
         app:srcCompat="@drawable/product_3" />
 
     <TextView
-        android:id="@+id/product_item_name"
+        android:id="@+id/product_order_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -32,11 +32,11 @@
         android:textColor="#000"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/product_item_image"
+        app:layout_constraintStart_toEndOf="@+id/product_order_item_image"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/product_item_price"
+        android:id="@+id/product_order_item_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -45,11 +45,11 @@
         android:textColor="#000"
         android:textSize="15sp"
         android:textStyle="bold|italic"
-        app:layout_constraintStart_toEndOf="@+id/product_item_image"
-        app:layout_constraintTop_toBottomOf="@+id/product_item_name" />
+        app:layout_constraintStart_toEndOf="@+id/product_order_item_image"
+        app:layout_constraintTop_toBottomOf="@+id/product_order_item_name" />
 
     <TextView
-        android:id="@+id/product_item_quantity"
+        android:id="@+id/product_order_item_quantity"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="20dp"
@@ -61,37 +61,10 @@
         android:textColor="#000"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/product_item_price"
-        app:layout_constraintTop_toBottomOf="@+id/product_item_price" />
-
-    <ImageView
-        android:id="@+id/delete_icon"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/close" />
+        app:layout_constraintStart_toStartOf="@+id/product_order_item_price"
+        app:layout_constraintTop_toBottomOf="@+id/product_order_item_price" />
 
     <TextView
-        android:id="@+id/up_icon"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:background="#000"
-        android:padding="3dp"
-        android:text="+"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:textAlignment="center"
-        android:textColor="#fff"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/product_item_quantity"
-        app:layout_constraintStart_toEndOf="@+id/product_item_quantity" />
-
-    <TextView
-        android:id="@+id/down_icon"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:background="#000"
@@ -103,7 +76,22 @@
         android:textColor="#fff"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/product_item_quantity"
-        app:layout_constraintEnd_toStartOf="@+id/product_item_quantity" />
+        app:layout_constraintBottom_toBottomOf="@+id/product_order_item_quantity"
+        app:layout_constraintStart_toEndOf="@+id/product_order_item_quantity" />
+
+    <TextView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="#000"
+        android:padding="3dp"
+        android:text="-"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:textAlignment="center"
+        android:textColor="#fff"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/product_order_item_quantity"
+        app:layout_constraintEnd_toStartOf="@+id/product_order_item_quantity" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

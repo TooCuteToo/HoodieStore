@@ -1,10 +1,21 @@
 package com.example.shopping.Utils;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Application;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.widget.Toast;
+
 import com.example.shopping.Adapter.CategoryAdapter;
+import com.example.shopping.Adapter.OrderAdapter;
+import com.example.shopping.Adapter.OrderDetailAdapter;
 import com.example.shopping.Interface.API;
 import com.example.shopping.Model.Category;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.Model.Order;
+import com.example.shopping.Model.OrderDetail;
 import com.example.shopping.Model.Product;
 import com.example.shopping.Adapter.ProductAdapter;
 
@@ -18,8 +29,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIHelper {
     public static String baseURL = "http://10.0.2.2:8000/api/";
+    public static int code = 0;
 
-    private static Retrofit buildRetrofit() {
+    public static Retrofit buildRetrofit() {
         return new Retrofit.Builder()
                 .baseUrl(baseURL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -39,12 +51,12 @@ public class APIHelper {
                     List<Product> products = response.body();
                     productAdapter.setProducts(products);
                     productAdapter.notifyDataSetChanged();
-                } else return;
+                }
             }
 
             @Override
             public void onFailure(Call<List<Product>> call, Throwable t) {
-                System.out.println(t);
+                Dialog.showAlert(productAdapter.getContext(), t.toString());
             }
         });
     }
@@ -67,6 +79,52 @@ public class APIHelper {
 
             @Override
             public void onFailure(Call<List<Category>> call, Throwable t) {
+                System.out.println(t);
+            }
+        });
+    }
+
+    public static void fetchOrders(int customerId, OrderAdapter orderAdapter) {
+        Retrofit retrofit = buildRetrofit();
+        API api = retrofit.create(API.class);
+
+        Call<List<Order>> call = api.getOrders(customerId);
+
+        call.enqueue(new Callback<List<Order>>() {
+            @Override
+            public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                if (response.isSuccessful()) {
+                    List<Order> orders = response.body();
+                    orderAdapter.setOrders(orders);
+                    orderAdapter.notifyDataSetChanged();
+                } else return;
+            }
+
+            @Override
+            public void onFailure(Call<List<Order>> call, Throwable t) {
+                System.out.println(t);
+            }
+        });
+    }
+
+    public static void fetchOrdersDetail(int orderId, OrderDetailAdapter orderDetailAdapter) {
+        Retrofit retrofit = buildRetrofit();
+        API api = retrofit.create(API.class);
+
+        Call<List<OrderDetail>> call = api.getOrdersDetail(orderId);
+
+        call.enqueue(new Callback<List<OrderDetail>>() {
+            @Override
+            public void onResponse(Call<List<OrderDetail>> call, Response<List<OrderDetail>> response) {
+                if (response.isSuccessful()) {
+                    List<OrderDetail> orders = response.body();
+                    orderDetailAdapter.setOrderDetails(orders);
+                    orderDetailAdapter.notifyDataSetChanged();
+                } else return;
+            }
+
+            @Override
+            public void onFailure(Call<List<OrderDetail>> call, Throwable t) {
                 System.out.println(t);
             }
         });
@@ -178,16 +236,26 @@ public class APIHelper {
         });
     }
 
-    public static void createCustomer(Customer customer) {
+    public static void createCustomer(Customer customer, Activity activity, Intent intent) {
         Retrofit retrofit = buildRetrofit();
         API api = retrofit.create(API.class);
-
         Call<Void> call = api.createCustomer(customer);
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                System.out.println(response.code());
+                code = response.code();
+
+                if (code == 400) {
+                    Dialog.showAlert(activity, "Email or username is already existed!!!");
+                    return;
+                }
+
+                intent.putExtra("info", customer);
+                activity.setResult(101, intent);
+
+                activity.startActivity(intent);
+                activity.finish();
             }
 
             @Override
@@ -197,7 +265,7 @@ public class APIHelper {
         });
     }
 
-    public static void editCustomer(int id, Customer customer) {
+    public static void editCustomer(int id, Customer customer, Activity activity) {
         Retrofit retrofit = buildRetrofit();
         API api = retrofit.create(API.class);
 
@@ -207,6 +275,7 @@ public class APIHelper {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 System.out.println(response.code());
+
             }
 
             @Override

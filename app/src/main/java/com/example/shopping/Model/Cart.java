@@ -60,7 +60,12 @@ public class Cart {
         items.remove(item);
     }
 
-    public void clearItems() {
-        items.clear();
+    public int isInCart(CartItem item) {
+        for (int i = 0; i < items.size(); ++i) {
+            if (items.get(i).getId() == item.getId()) return i;
+        }
+
+        return -1;
     }
+
 }

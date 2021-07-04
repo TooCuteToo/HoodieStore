@@ -26,10 +26,13 @@ import com.example.shopping.Fragment.FavoriteFragment;
 import com.example.shopping.Fragment.InfoFragment;
 import com.example.shopping.Fragment.ProductsFragment;
 import com.example.shopping.Fragment.SearchFragment;
+import com.example.shopping.Interface.API;
 import com.example.shopping.Model.Cart;
 import com.example.shopping.Model.CartItem;
 import com.example.shopping.Model.Customer;
+import com.example.shopping.Model.Product;
 import com.example.shopping.R;
+import com.example.shopping.Utils.APIHelper;
 import com.example.shopping.Utils.Counter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -40,7 +43,12 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
+    public class HomeActivity extends AppCompatActivity {
     BottomNavigationView navView;
     Bundle bundle;
     Fragment fragment;
@@ -127,10 +135,15 @@ public class HomeActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = getSharedPreferences("loginPrefs", MODE_PRIVATE).edit();
                     editor.clear().apply();
 
+                    SharedPreferences.Editor mPrefsEditor = getSharedPreferences("CartPrefs", MODE_PRIVATE).edit();
+                    mPrefsEditor.clear().apply();
+                    Cart.getInstance().getItems().clear();
+
                     Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
                     break;
+
                 case R.id.nav_share: Toast.makeText(HomeActivity.this, "Share", Toast.LENGTH_SHORT).show(); break;
             }
 
@@ -163,10 +176,8 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
 
                 case R.id.heart:
-                    Counter.favoriteCounter = 0;
-                    navView.getOrCreateBadge(R.id.heart).clearNumber();
-                    navView.getOrCreateBadge(R.id.heart).setVisible(false);
                     fragment = new FavoriteFragment();
+                    ((FavoriteFragment) fragment).setNavView(navView);
                     fragment.setArguments(bundle);
                     loadFragment(fragment);
                     return true;
@@ -219,10 +230,32 @@ public class HomeActivity extends AppCompatActivity {
         if (items == null) {
             items = new ArrayList<>();
         }
+
         Cart.getInstance().setItems((ArrayList<CartItem>) items);
 
         if (Cart.getInstance().calculateQuantity() != 0) {
             navView.getOrCreateBadge(R.id.cart).setNumber(Cart.getInstance().calculateQuantity());
         }
+
+        Retrofit retrofit = APIHelper.buildRetrofit();
+        API api = retrofit.create(API.class);
+        Call<List<Product>> call = api.getFavorite(customer.getCustomerId());
+
+        call.enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful()) {
+                    List<Product> products = response.body();
+                    Counter.favoriteCounter = products.size();
+
+                    if (Counter.favoriteCounter > 0) navView.getOrCreateBadge(R.id.heart).setNumber(products.size());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                System.out.println(t);
+            }
+        });
     }
 }

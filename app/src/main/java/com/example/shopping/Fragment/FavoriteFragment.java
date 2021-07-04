@@ -13,21 +13,37 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.shopping.Adapter.ProductAdapter;
+import com.example.shopping.Interface.API;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.Model.Product;
 import com.example.shopping.R;
 import com.example.shopping.Utils.APIHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class FavoriteFragment extends Fragment {
     RecyclerView favoriteRecycler;
     ProductAdapter productAdapter;
     Customer customer;
+    BottomNavigationView navView;
 
     public FavoriteFragment() {
         // Required empty public constructor
+    }
+
+    public BottomNavigationView getNavView() {
+        return navView;
+    }
+
+    public void setNavView(BottomNavigationView navView) {
+        this.navView = navView;
     }
 
     @Override
@@ -61,8 +77,28 @@ public class FavoriteFragment extends Fragment {
         Customer customer = (Customer) args.getSerializable("info");
 
         productAdapter.setCustomer(customer);
+        productAdapter.setFlag(1);
+        productAdapter.setNavView(navView);
         favoriteRecycler.setAdapter(productAdapter);
 
-        APIHelper.fetchFavorite(customer.getCustomerId(), productAdapter);
+        Retrofit retrofit = APIHelper.buildRetrofit();
+        API api = retrofit.create(API.class);
+        Call<List<Product>> call = api.getFavorite(customer.getCustomerId());
+
+        call.enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful()) {
+                    List<Product> products = response.body();
+                    productAdapter.setProducts(products);
+                    productAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                System.out.println(t);
+            }
+        });
     }
 }

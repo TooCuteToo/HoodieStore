@@ -66,6 +66,7 @@ public class SearchFragment extends Fragment {
 
         products = new ArrayList<>();
         productAdapter = new ProductAdapter(getContext(), products);
+        productAdapter.setNavView(navView);
         search_recycler.setAdapter(productAdapter);
 
 //        EditText searchTxt = view.findViewById(R.id.searchTxt);
