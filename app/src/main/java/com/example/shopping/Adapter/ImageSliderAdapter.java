@@ -49,8 +49,7 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Sli
     public void onBindViewHolder(SliderAdapterVH viewHolder, final int position) {
 
         SliderItem sliderItem = mSliderItems.get(position);
-
-        viewHolder.textViewDescription.setText(sliderItem.getTextDesc());
+        
         Glide.with(viewHolder.itemView)
                 .load(sliderItem.getImageUrl())
                 .into(viewHolder.imageViewBackground);
@@ -72,12 +71,10 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Sli
     class SliderAdapterVH extends SliderViewAdapter.ViewHolder {
         View itemView;
         ImageView imageViewBackground;
-        TextView textViewDescription;
 
         public SliderAdapterVH(View itemView) {
             super(itemView);
             imageViewBackground = itemView.findViewById(R.id.imageViewBackground);
-            textViewDescription = itemView.findViewById(R.id.textViewDesc);
             this.itemView = itemView;
         }
     }

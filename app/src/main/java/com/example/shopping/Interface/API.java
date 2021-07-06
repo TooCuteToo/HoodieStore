@@ -5,6 +5,7 @@ import com.example.shopping.Model.Order;
 import com.example.shopping.Model.OrderDetail;
 import com.example.shopping.Model.Product;
 
+import java.text.Normalizer;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -59,4 +60,8 @@ public interface API {
 
     @PUT("customer/{id}")
     Call<Void> editCustomer(@Path("id") int id, @Body Customer customer);
+
+    @POST("order_detail")
+    @FormUrlEncoded
+    Call<Void> deleteOrder(@Field("orderId") int orderId);
 }

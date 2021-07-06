@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -98,7 +101,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderAdapter
         return orders.size();
     }
 
-    public class OrderAdapterVH extends RecyclerView.ViewHolder {
+    public class OrderAdapterVH extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         public TextView orderItemNumber;
         public TextView orderItemTotal;
         public MaterialCardView orderItemCard;
@@ -110,6 +113,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderAdapter
             this.orderItemNumber = itemView.findViewById(R.id.order_item_number);
             this.orderItemTotal = itemView.findViewById(R.id.order_item_total);
             this.orderItemCard = itemView.findViewById(R.id.order_item_card);
+            orderItemCard.setOnCreateContextMenuListener(this);
 
             this.orderItemCard.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -132,6 +136,11 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderAdapter
                     transaction.commit();
                 }
             });
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.add(this.getAdapterPosition(), 773, 0, "Delete");
         }
     }
 }

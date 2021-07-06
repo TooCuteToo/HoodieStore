@@ -44,6 +44,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductAdapterVH> {
     private Context context;
     private List<Product> products;
+    private List<Integer> checkProducts;
     private Customer customer;
     private BottomNavigationView navView;
     private int flag; // 0 - ProductFragement || 1 - FavoriteFragment
@@ -51,6 +52,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
     public ProductAdapter(Context context, List<Product> products) {
         this.context = context;
         this.products = products;
+        this.checkProducts = new ArrayList<>();
     }
 
     public Context getContext() {
@@ -123,11 +125,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (response.isSuccessful()) {
-                    List<Product> products = response.body();
+                    List<Product> favProducts = response.body();
 
-                    if (products.size() > 0) {
-                        for (Product elem : products) {
-                            if (elem.getId() == product.getId()) holder.product_heart.setChecked(true);
+                    for (Product elem : favProducts) {
+                        Product temp = products.get(position);
+
+                        if (elem.getId() == temp.getId()) {
+                            ((ToggleButton) holder.itemView.findViewById(R.id.product_heart)).setChecked(true);
                         }
                     }
                 }
@@ -138,6 +142,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                 System.out.println(t);
             }
         });
+
 
 //        holder.product_img.setImageURI(Uri.parse("file:///android_asset/Image/" + product.getImg()));
 
@@ -262,8 +267,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                 public void onClick(View v) {
                     if (product_heart.isChecked()) {
                         Product product = products.get(getLayoutPosition());
-                        navView.getOrCreateBadge(R.id.heart).setNumber(++Counter.favoriteCounter);
-                        navView.getOrCreateBadge(R.id.heart).setVisible(true);
 
                         Retrofit retrofit = APIHelper.buildRetrofit();
                         API api = retrofit.create(API.class);
@@ -273,6 +276,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
                                 System.out.println(response.code());
+                                navView.getOrCreateBadge(R.id.heart).setNumber(++Counter.favoriteCounter);
+                                navView.getOrCreateBadge(R.id.heart).setVisible(true);
                             }
 
                             @Override
@@ -297,7 +302,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                                 } else {
                                     navView.getOrCreateBadge(R.id.heart).setVisible(false);
                                 }
-
 
                                 if (flag == 1) {
                                     products.remove(product);

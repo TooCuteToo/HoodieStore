@@ -23,6 +23,7 @@ import com.example.shopping.Model.Customer;
 import com.example.shopping.Model.Order;
 import com.example.shopping.R;
 import com.example.shopping.Utils.APIHelper;
+import com.example.shopping.Utils.Counter;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -67,6 +68,7 @@ public class OrdersFragment extends Fragment {
         orders = new ArrayList<>();
         orderAdapter = new OrderAdapter(getContext(), orders);
         orderItemRecycler.setAdapter(orderAdapter);
+//        registerForContextMenu(orderItemRecycler);
 
         Bundle args = getArguments();
         Customer customer = (Customer) args.getSerializable("info");
@@ -79,7 +81,7 @@ public class OrdersFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
                 if (response.isSuccessful()) {
-                    List<Order> orders = response.body();
+                    orders = response.body();
                     orderAdapter.setOrders(orders);
                     orderAdapter.notifyDataSetChanged();
                 }
@@ -90,5 +92,35 @@ public class OrdersFragment extends Fragment {
                 System.out.println(t);
             }
         });
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull @NotNull MenuItem item) {
+        if (item.getItemId() == 773) {
+            Order order = orderAdapter.getOrders().get(item.getGroupId());
+
+            Retrofit retrofit = APIHelper.buildRetrofit();
+            API api = retrofit.create(API.class);
+            Call<Void> call = api.deleteOrder(order.getOrderId());
+
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        orderAdapter.getOrders().remove(item.getGroupId());
+                        orderAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    System.out.println(t);
+                }
+            });
+
+            return true;
+        }
+
+        return super.onContextItemSelected(item);
     }
 }

@@ -12,16 +12,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.shopping.Interface.API;
 import com.example.shopping.Model.Customer;
 import com.example.shopping.Utils.APIHelper;
 import com.example.shopping.Adapter.ProductAdapter;
 import com.example.shopping.Model.Product;
 import com.example.shopping.R;
+import com.example.shopping.Utils.Dialog;
 import com.example.shopping.Utils.ImageSlider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,7 +78,26 @@ public class ProductsFragment extends Fragment {
     productAdapter.setCustomer(customer);
     product_recycler.setAdapter(productAdapter);
 
-    APIHelper.fetchProducts(productAdapter);
+    Retrofit retrofit = APIHelper.buildRetrofit();
+    API api = retrofit.create(API.class);
+    Call<List<Product>> call = api.getProducts();
+
+    call.enqueue(new Callback<List<Product>>() {
+      @Override
+      public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+        if (response.isSuccessful()) {
+          List<Product> products = response.body();
+          productAdapter.setProducts(products);
+          productAdapter.notifyDataSetChanged();
+        }
+      }
+
+      @Override
+      public void onFailure(Call<List<Product>> call, Throwable t) {
+        Dialog.showAlert(productAdapter.getContext(), t.toString());
+      }
+    });
+
     ImageSlider.loadImageSlider(view.findViewById(R.id.imageSlider), getContext());
   }
 

@@ -164,7 +164,9 @@ import retrofit2.Retrofit;
                     return true;
 
                 case R.id.search:
-                    fragment = new SearchFragment(navView);
+                    fragment = new SearchFragment();
+                    ((SearchFragment) fragment).setNavView(navView);
+                    fragment.setArguments(bundle);
                     loadFragment(fragment);
                     return true;
 

@@ -16,6 +16,7 @@ import android.widget.SearchView;
 
 import com.example.shopping.Adapter.ProductAdapter;
 import com.example.shopping.Interface.API;
+import com.example.shopping.Model.Customer;
 import com.example.shopping.Model.Product;
 import com.example.shopping.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -37,15 +38,27 @@ public class SearchFragment extends Fragment {
     private BottomNavigationView navView;
     private ProductAdapter productAdapter;
     private List<Product> products;
+    private Customer customer;
     private RecyclerView search_recycler;
-
 
     public SearchFragment() {
         // Required empty public constructor
     }
 
-    public SearchFragment(BottomNavigationView navView) {
+    public BottomNavigationView getNavView() {
+        return navView;
+    }
+
+    public void setNavView(BottomNavigationView navView) {
         this.navView = navView;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            customer = (Customer) getArguments().getSerializable("info");
+        }
     }
 
     @Override
@@ -65,7 +78,12 @@ public class SearchFragment extends Fragment {
         search_recycler.setLayoutManager(grid);
 
         products = new ArrayList<>();
+
+        Bundle args = getArguments();
+        Customer customer = (Customer) args.getSerializable("info");
+
         productAdapter = new ProductAdapter(getContext(), products);
+        productAdapter.setCustomer(customer);
         productAdapter.setNavView(navView);
         search_recycler.setAdapter(productAdapter);
 
@@ -134,8 +152,6 @@ public class SearchFragment extends Fragment {
                     products = response.body();
 
                     if (products.size() > 0){
-                        productAdapter.setProducts(products);
-                        productAdapter.notifyDataSetChanged();
                         search_recycler.setVisibility(View.VISIBLE);
                     }
 
